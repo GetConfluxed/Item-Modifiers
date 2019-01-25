@@ -1,3 +1,4 @@
+type.itemmodifiers.enchantable.name=Enchantable
 type.itemmodifiers.armor_all.name=Armor
 type.itemmodifiers.armor_feet.name=Footwear
 type.itemmodifiers.armor_legs.name=Leggings
@@ -9,4 +10,6 @@ type.itemmodifiers.sword.name=Sword
 type.itemmodifiers.tool.name=Tool
 type.itemmodifiers.fishing.name=Fishing
 type.itemmodifiers.bow.name=Bow
+type.itemmodifiers.wearable.name=Wearable
+type.itemmodifiers.breakable.name=Breakable
 type.itemmodifiers.food.name=Food
