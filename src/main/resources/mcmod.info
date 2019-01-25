@@ -1,0 +1,15 @@
+[
+  {
+    "modid": "itemmodifiers",
+    "name": "Item Modifiers",
+    "description": "Provides a system for item prefixes/modifiers.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "TODO",
+    "updateUrl": "",
+    "authorList": [
+      "Darkhax",
+	  "Jaredlll08"
+    ]
+  }
+]
