@@ -1,0 +1,12 @@
+type.itemmodifiers.armor_all.name=Armor
+type.itemmodifiers.armor_feet.name=Footwear
+type.itemmodifiers.armor_legs.name=Leggings
+type.itemmodifiers.armor_chestplate.name=Chest
+type.itemmodifiers.armor_helmet.name=Headwear
+type.itemmodifiers.mainhand.name=Main Hand
+type.itemmodifiers.offhand.name=Offhand
+type.itemmodifiers.sword.name=Sword
+type.itemmodifiers.tool.name=Tool
+type.itemmodifiers.fishing.name=Fishing
+type.itemmodifiers.bow.name=Bow
+type.itemmodifiers.food.name=Food
