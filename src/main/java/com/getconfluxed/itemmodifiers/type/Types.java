@@ -56,16 +56,40 @@ public class Types {
         toRegister.clear();
     }
 
+    /**
+     * Creates a new type and registers it based on an enchantment type. It is registered with
+     * the mod's id.
+     *
+     * @param id The id of the type to register.
+     * @param type The EnumEnchantmentType to base it on.
+     * @return The type that was registered.
+     */
     private static Type createType (String id, EnumEnchantmentType type) {
 
         return createType(id, new TypeEnchantmentWrapped(type));
     }
 
+    /**
+     * Creates a new type and registers it based on a predicate. It is registered with the
+     * mod's id.
+     *
+     * @param id The id of the type to register.
+     * @param predicate The predicate used for the type.
+     * @return The type that was registered.
+     */
     private static Type createType (String id, Predicate<ItemStack> predicate) {
 
         return createType(id, new TypePredicate(predicate));
     }
 
+    /**
+     * Creates a new type and registers it. This is used internally and registers it with the
+     * mod's id.
+     *
+     * @param id The id of the type to register.
+     * @param type The type to register.
+     * @return The type that was registered.
+     */
     private static Type createType (String id, Type type) {
 
         type.setRegistryName(new ResourceLocation(ItemModifiersMod.MODID, id));
