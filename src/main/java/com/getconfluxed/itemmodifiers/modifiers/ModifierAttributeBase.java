@@ -41,7 +41,7 @@ public class ModifierAttributeBase extends Modifier {
     @Override
     public Multimap<String, AttributeModifier> getAttributeModifiers (EntityEquipmentSlot slot, ItemStack stack) {
 
-        return this.attributes;
+        return slot == this.applicableSlot ? this.attributes : super.getAttributeModifiers(slot, stack);
     }
 
     @Override
