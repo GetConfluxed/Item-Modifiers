@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import com.getconfluxed.itemmodifiers.type.Type;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,8 +21,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
+public class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
 
+    /**
+     * The type of items this modifier can be applied to.
+     */
+    private final Type type;
+    
     /**
      * The weight of the modifier. 
      */
@@ -34,8 +38,9 @@ public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
      */
     private final Multimap<String, AttributeModifier> modifiers = HashMultimap.create();
     
-    public Modifier(int weight) {
+    public Modifier(Type type, int weight) {
         
+        this.type = type;
         this.weight = weight;
     }
 
@@ -45,7 +50,10 @@ public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
      *
      * @return The type of items this modifier can be applied to.
      */
-    public abstract Type getType ();
+    public Type getType () {
+        
+        return this.type;
+    }
     
     /**
      * The weight/rarity of the modifier.
