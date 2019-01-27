@@ -1,14 +1,30 @@
 package com.getconfluxed.itemmodifiers;
 
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
+import com.getconfluxed.itemmodifiers.modifiers.Modifiers;
 
+import net.darkhax.bookshelf.util.MathsUtils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @EventBusSubscriber(modid = ItemModifiersMod.MODID)
 public class EventHandler {
+
+    @SubscribeEvent
+    public static void onCrafting (PlayerEvent.ItemCraftedEvent event) {
+
+        if (event.crafting.getItem() instanceof ItemSword) {
+
+            ItemModifierHelper.setModifier(event.crafting, MathsUtils.tryPercentage(0.5) ? Modifiers.DULL : Modifiers.POINTY);
+        }
+    }
 
     @SubscribeEvent
     public static void onEquipmentChangedEvent (LivingEquipmentChangeEvent event) {
@@ -40,6 +56,23 @@ public class EventHandler {
 
                 newModifier.onEquipped(previousStack, newStack, event.getEntityLiving(), event.getSlot());
             }
+        }
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public static void onTooltipRendered (ItemTooltipEvent event) {
+
+        // Try to get a modifier from the item.
+        final Modifier modifier = ItemModifierHelper.getModifier(event.getItemStack());
+
+        if (modifier != null) {
+
+            // Add the name modifier name to the item.
+            event.getToolTip().set(0, modifier.modifyItemName(event.getToolTip().get(0), event.getItemStack()));
+
+            // Allow modifier to modify the tooltips.
+            modifier.modifyTooltip(event.getToolTip(), event.getEntityPlayer(), event.getItemStack());
         }
     }
 }

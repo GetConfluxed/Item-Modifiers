@@ -1,14 +1,25 @@
 package com.getconfluxed.itemmodifiers.modifiers;
 
+import java.util.List;
+import java.util.Map.Entry;
+
 import com.getconfluxed.itemmodifiers.type.Type;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
@@ -88,4 +99,66 @@ public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
      * @return The type of items this modifier can be applied to.
      */
     public abstract Type getType ();
+
+    /**
+     * Gets the localization key for the name of the modifier.
+     *
+     * @return A localization key for the name of the modifier.
+     */
+    public String getLocalizationKey () {
+
+        final ResourceLocation id = this.getRegistryName();
+        return "modifier." + id.getNamespace() + "." + id.getPath() + ".name";
+    }
+
+    /**
+     * Gets a text component containing the name of the modifier.
+     *
+     * @return The text component for the name.
+     */
+    public ITextComponent getNameTextComponent () {
+
+        return new TextComponentTranslation(this.getLocalizationKey());
+    }
+
+    @SideOnly(Side.CLIENT)
+    public String modifyItemName (String originalName, ItemStack stack) {
+
+        return I18n.format(this.getLocalizationKey()) + " " + originalName;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void modifyTooltip (List<String> tooltip, EntityPlayer player, ItemStack stack) {
+
+        // Check all the slot types to see if the item will have an effect.
+        for (final EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values()) {
+
+            // Get the attributes map from the modifier
+            final Multimap<String, AttributeModifier> attributeModifiers = this.getAttributeModifiers(entityequipmentslot, stack);
+
+            if (!attributeModifiers.isEmpty()) {
+
+                // Iterate any bonuses from the modifier and show them on the tooltip.
+                for (final Entry<String, AttributeModifier> entry : attributeModifiers.entries()) {
+
+                    final AttributeModifier attributemodifier = entry.getValue();
+                    final double amount = attributemodifier.getAmount();
+
+                    // Gets the display amount value. Operation 1 and 2 are percentages, so
+                    // x100.
+                    final double displayValue = attributemodifier.getOperation() > 0 ? amount * 100d : amount;
+
+                    // Render value as positive
+                    if (amount > 0.0D) {
+                        tooltip.add(TextFormatting.GREEN + I18n.format("attribute.modifier.plus." + attributemodifier.getOperation(), ItemStack.DECIMALFORMAT.format(displayValue), I18n.format("attribute.name." + entry.getKey())));
+                    }
+
+                    // Render value as negative
+                    else if (amount < 0.0D) {
+                        tooltip.add(TextFormatting.RED + I18n.format("attribute.modifier.take." + attributemodifier.getOperation(), ItemStack.DECIMALFORMAT.format(displayValue * -1d), I18n.format("attribute.name." + entry.getKey())));
+                    }
+                }
+            }
+        }
+    }
 }
