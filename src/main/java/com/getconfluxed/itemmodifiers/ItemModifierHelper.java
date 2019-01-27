@@ -83,6 +83,7 @@ public class ItemModifierHelper {
         final NBTTagCompound modifierTag = new NBTTagCompound();
         modifierTag.setString("id", modifier.getRegistryName().toString());
         modifier.onApplied(stack);
+        stackTag.setTag(MODIFIER_TAG_KEY, modifierTag);
     }
 
     /**
