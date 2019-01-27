@@ -1,11 +1,8 @@
 package com.getconfluxed.itemmodifiers;
 
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
-import com.getconfluxed.itemmodifiers.modifiers.Modifiers;
 
-import net.darkhax.bookshelf.util.MathsUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -20,10 +17,6 @@ public class EventHandler {
     @SubscribeEvent
     public static void onCrafting (PlayerEvent.ItemCraftedEvent event) {
 
-        if (event.crafting.getItem() instanceof ItemSword) {
-
-            ItemModifierHelper.setModifier(event.crafting, MathsUtils.tryPercentage(0.5) ? Modifiers.DULL : Modifiers.POINTY);
-        }
     }
 
     @SubscribeEvent

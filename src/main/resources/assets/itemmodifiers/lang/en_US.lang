@@ -1,3 +1,6 @@
+#English Language File
+
+#Types
 type.itemmodifiers.enchantable.name=Enchantable
 type.itemmodifiers.armor_all.name=Armor
 type.itemmodifiers.armor_feet.name=Footwear
@@ -13,3 +16,7 @@ type.itemmodifiers.bow.name=Bow
 type.itemmodifiers.wearable.name=Wearable
 type.itemmodifiers.breakable.name=Breakable
 type.itemmodifiers.food.name=Food
+
+#Modifiers
+modifier.itemmodifiers.pointy.name=Pointy
+modifier.itemmodifiers.dull.name=Dull

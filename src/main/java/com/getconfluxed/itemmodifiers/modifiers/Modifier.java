@@ -25,11 +25,36 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
 
     /**
-     * This multimap is empty and immutable. It's used by
-     * {@link #getAttributeModifiers(EntityEquipmentSlot, ItemStack)} as an empty default for
-     * performance reasons.
+     * The weight of the modifier. 
      */
-    private static final Multimap<String, AttributeModifier> DEFAULT = Multimaps.unmodifiableMultimap(HashMultimap.create());
+    private final int weight;
+    
+    /**
+     * A map of all the attribute modifiers applied by the item modifier.
+     */
+    private final Multimap<String, AttributeModifier> modifiers = HashMultimap.create();
+    
+    public Modifier(int weight) {
+        
+        this.weight = weight;
+    }
+
+    /**
+     * Gets the type of modifier. This is used to determine what types of items this can be
+     * applied to.
+     *
+     * @return The type of items this modifier can be applied to.
+     */
+    public abstract Type getType ();
+    
+    /**
+     * The weight/rarity of the modifier.
+     * @return The weight/rarity of the modifier.
+     */
+    public int getWeight() {
+        
+        return this.weight;
+    }
 
     /**
      * Gets a multimap of all the attribute modifiers provided by this Item modifier. This
@@ -43,7 +68,7 @@ public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
      */
     public Multimap<String, AttributeModifier> getAttributeModifiers (EntityEquipmentSlot slot, ItemStack stack) {
 
-        return DEFAULT;
+        return modifiers;
     }
 
     /**
@@ -91,20 +116,13 @@ public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
     public void onRemoved (ItemStack stack) {
 
     }
-
-    /**
-     * Gets the type of modifier. This is used to determine what types of items this can be
-     * applied to.
-     *
-     * @return The type of items this modifier can be applied to.
-     */
-    public abstract Type getType ();
-
+    
     /**
      * Gets the localization key for the name of the modifier.
      *
      * @return A localization key for the name of the modifier.
      */
+    @SideOnly(Side.CLIENT)
     public String getLocalizationKey () {
 
         final ResourceLocation id = this.getRegistryName();
@@ -116,6 +134,7 @@ public abstract class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
      *
      * @return The text component for the name.
      */
+    @SideOnly(Side.CLIENT)
     public ITextComponent getNameTextComponent () {
 
         return new TextComponentTranslation(this.getLocalizationKey());
