@@ -12,6 +12,7 @@ import com.google.gson.annotations.Expose;
 
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.ResourceLocation;
 
 public class ModifierEntry {
@@ -23,8 +24,11 @@ public class ModifierEntry {
     private int weight;
 
     @Expose
-    private final boolean prefix = true;
+    private boolean prefix = true;
 
+    @Expose
+    private String slot = "mainhand";
+    
     @Expose
     private AttributeInfo[] attributes;
 
@@ -40,6 +44,19 @@ public class ModifierEntry {
         private int operation;
     }
 
+    private EntityEquipmentSlot getSlot(String name) {
+        
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+            
+            if (slot.getName().equalsIgnoreCase(name)) {
+                
+                return slot;
+            }
+        }
+        
+        ItemModifiersMod.LOG.error("Could not find slot type for {}. Defaulting to mainhand.", name);
+        return EntityEquipmentSlot.MAINHAND;
+    }
     @Nullable
     public Modifier build (ResourceLocation location) {
 
@@ -51,7 +68,7 @@ public class ModifierEntry {
 
                 if (specifiedType != null) {
 
-                    final Modifier modifier = new Modifier(specifiedType, this.weight, this.prefix);
+                    final Modifier modifier = new Modifier(specifiedType, this.weight, this.prefix, getSlot(slot));
 
                     for (final AttributeInfo info : this.attributes) {
 

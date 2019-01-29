@@ -24,9 +24,11 @@ public class ItemModifiersMod {
     public static final String NAME = "Item Modifiers";
     public static final Logger LOG = LogManager.getLogger(NAME);
 
-    public static final IForgeRegistry<Type> TYPE_REGISTRY = createRegistry("types", Type.class);
-    public static final IForgeRegistry<Modifier> MODIFIER_REGISTRY = createRegistry("modifiers", Modifier.class);
-    public static final Multimap<Type, Modifier> TYPES_TO_MODIFIERS = HashMultimap.create();
+    public static final IForgeRegistry<Type> TYPE_REGISTRY = createRegistry("a-types", Type.class);
+    public static final IForgeRegistry<Modifier> MODIFIER_REGISTRY = createRegistry("b-modifiers", Modifier.class);
+
+    public static final Multimap<Type, Modifier> PREFIXES = HashMultimap.create();
+    public static final Multimap<Type, Modifier> SUFFIXES = HashMultimap.create();
 
     @EventHandler
     public void onLoadComplete (FMLLoadCompleteEvent event) {
@@ -36,7 +38,15 @@ public class ItemModifiersMod {
 
         for (final Modifier modifier : MODIFIER_REGISTRY) {
 
-            TYPES_TO_MODIFIERS.put(modifier.getType(), modifier);
+            if (modifier.isPrefix()) {
+                
+                PREFIXES.put(modifier.getType(), modifier);
+            }
+            
+            else {
+                
+                SUFFIXES.put(modifier.getType(), modifier);
+            }
         }
     }
 

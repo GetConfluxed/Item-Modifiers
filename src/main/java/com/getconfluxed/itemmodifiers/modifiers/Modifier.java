@@ -1,5 +1,6 @@
 package com.getconfluxed.itemmodifiers.modifiers;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -7,6 +8,7 @@ import com.getconfluxed.itemmodifiers.Registerable;
 import com.getconfluxed.itemmodifiers.type.Type;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,6 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class Modifier extends Registerable<Modifier> {
 
+    private static final Multimap<String, AttributeModifier> EMPTY = Multimaps.unmodifiableMultimap(HashMultimap.create());
     /**
      * The type of items this modifier can be applied to.
      */
@@ -38,18 +41,21 @@ public class Modifier extends Registerable<Modifier> {
      * Whether or not this modifier is a prefix.
      */
     private final boolean prefix;
+    
+    private final EntityEquipmentSlot slot;
 
     /**
      * A map of all the attribute modifiers applied by the item modifier.
      */
     private final Multimap<String, AttributeModifier> modifiers = HashMultimap.create();
 
-    public Modifier (Type type, int weight, boolean prefix) {
+    public Modifier (Type type, int weight, boolean prefix, EntityEquipmentSlot slot) {
 
         super(Modifier.class);
         this.type = type;
         this.weight = weight;
         this.prefix = prefix;
+        this.slot = slot;
     }
 
     /**
@@ -101,7 +107,7 @@ public class Modifier extends Registerable<Modifier> {
      */
     public Multimap<String, AttributeModifier> getAttributeModifiers (EntityEquipmentSlot slot, ItemStack stack) {
 
-        return this.modifiers;
+        return slot == this.slot ? this.modifiers : EMPTY;
     }
 
     /**
@@ -176,7 +182,8 @@ public class Modifier extends Registerable<Modifier> {
     @SideOnly(Side.CLIENT)
     public String modifyItemName (String originalName, ItemStack stack) {
 
-        return I18n.format(this.getLocalizationKey()) + " " + originalName;
+        final String modifierName = I18n.format(this.getLocalizationKey());
+        return prefix ? modifierName + " " + originalName : originalName + " " + modifierName;
     }
 
     @SideOnly(Side.CLIENT)

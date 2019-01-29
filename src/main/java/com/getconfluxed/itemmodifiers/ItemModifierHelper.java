@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
 import com.getconfluxed.itemmodifiers.type.Type;
 
@@ -65,77 +63,79 @@ public class ItemModifierHelper {
         return types;
     }
 
-    /**
-     * Gets the modifier on an ItemStack. The result of this method is nullable!
-     *
-     * @param stack The ItemStack to read data from.
-     * @return The modifier on the stack, or null if no stack is valid.
-     */
-    @Nullable
-    public static Modifier getModifier (ItemStack stack) {
-
-        final NBTTagCompound stackTag = stack.getTagCompound();
-
-        if (stackTag != null && stackTag.hasKey(MODIFIER_TAG_KEY)) {
-
-            final NBTTagCompound modifierTag = stackTag.getCompoundTag(MODIFIER_TAG_KEY);
-            return ItemModifiersMod.MODIFIER_REGISTRY.getValue(new ResourceLocation(modifierTag.getString("id")));
+    public static NBTTagCompound getModifierTag(ItemStack stack, boolean create) {
+        
+        if (stack.hasTagCompound()) {
+            
+            final NBTTagCompound stackTag = stack.getTagCompound();
+            
+            if (stackTag != null) {
+                
+                final NBTTagCompound modifierTag = stackTag.getCompoundTag(MODIFIER_TAG_KEY);
+                
+                if (modifierTag != null) {
+                    
+                    return modifierTag;
+                }
+            }
         }
-
+        
+        if (create) {
+            
+            final NBTTagCompound stackTag = StackUtils.prepareStackTag(stack);
+            final NBTTagCompound modifierTag = new NBTTagCompound();
+            stackTag.setTag(MODIFIER_TAG_KEY, modifierTag);
+            return modifierTag;
+        }
+        
         return null;
     }
-
-    /**
-     * Sets a modifier to an ItemStack. If a modifier already exists
-     * {@link #removeModifiers(ItemStack)} will be called automatically. This method is also
-     * responsible for firing the {@link Modifier#onApplied(ItemStack)} hook.
-     *
-     * @param stack The ItemStack to set the modifier to.
-     * @param modifier The modifier to apply.
-     */
-    public static void setModifier (ItemStack stack, Modifier modifier) {
-
-        final NBTTagCompound stackTag = StackUtils.prepareStackTag(stack);
-
-        // Handles the removal of any existing modifiers.
-        if (stackTag.hasKey(MODIFIER_TAG_KEY)) {
-
-            removeModifiers(stack);
-        }
-
-        // Handle adding the new modifier
-        final NBTTagCompound modifierTag = new NBTTagCompound();
-        modifierTag.setString("id", modifier.getRegistryName().toString());
-        modifier.onApplied(stack);
-        stackTag.setTag(MODIFIER_TAG_KEY, modifierTag);
+    
+    public static Modifier[] getModifiers(ItemStack stack) {
+        
+        return new Modifier[] {getPrefix(stack), getSuffix(stack)};
     }
-
-    /**
-     * Removes all modifier data from an ItemStack. This includes deleting the NBT tag and
-     * firing the {@link Modifier#onRemoved(ItemStack)} hook.
-     *
-     * @param stack The ItemStack to clean up.
-     */
-    public static void removeModifiers (ItemStack stack) {
-
-        final NBTTagCompound stackTag = stack.getTagCompound();
-
-        if (stackTag != null && stackTag.hasKey(MODIFIER_TAG_KEY)) {
-
-            final NBTTagCompound modifierTag = stackTag.getCompoundTag(MODIFIER_TAG_KEY);
-
-            // Retrieve the modifier from the registry.
-            final Modifier existingModifier = ItemModifiersMod.MODIFIER_REGISTRY.getValue(new ResourceLocation(modifierTag.getString("id")));
-
-            // Fire the removal cleanup hook
-            if (existingModifier != null) {
-
-                existingModifier.onRemoved(stack);
-            }
-
-            // Completely remove the modifier tag.
-            stackTag.removeTag(MODIFIER_TAG_KEY);
+    
+    public static Modifier getPrefix(ItemStack stack) {
+        
+        final NBTTagCompound tag = getModifierTag(stack, false);
+        
+        if (tag != null) {
+            
+            final NBTTagCompound modifierTag = tag.getCompoundTag("Prefix");
+            return ItemModifiersMod.MODIFIER_REGISTRY.getValue(new ResourceLocation(modifierTag.getString("Id")));
         }
+        
+        return null;
+    }
+    
+    public static Modifier getSuffix(ItemStack stack) {
+        
+        final NBTTagCompound tag = getModifierTag(stack, false);
+        
+        if (tag != null) {
+            
+            final NBTTagCompound modifierTag = tag.getCompoundTag("Suffix");
+            return ItemModifiersMod.MODIFIER_REGISTRY.getValue(new ResourceLocation(modifierTag.getString("Id")));
+        }
+        
+        return null;
+    }
+    
+    public static void setModifier(ItemStack stack, Modifier modifier) {
+        
+        final NBTTagCompound tag = getModifierTag(stack, true);        
+        final Modifier existing = modifier.isPrefix() ? getPrefix(stack) : getSuffix(stack);
+        
+        if (existing != null) {
+            
+            existing.onRemoved(stack);
+        }
+        
+        final NBTTagCompound modifierTag = new NBTTagCompound();
+        modifierTag.setString("Id", modifier.getRegistryName().toString());
+        tag.setTag(modifier.isPrefix() ? "Prefix" : "Suffix", modifierTag);
+        modifier.onApplied(stack);
     }
 
     public static void addAttribute (IAttribute attribute) {
