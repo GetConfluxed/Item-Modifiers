@@ -24,13 +24,33 @@ public class ModifierEntry {
     private int weight;
 
     @Expose
-    private final boolean prefix = true;
+    private boolean prefix = true;
 
     @Expose
-    private final String slot = "mainhand";
+    private String slot = "mainhand";
 
     @Expose
     private AttributeInfo[] attributes;
+
+    public boolean isPrefix () {
+
+        return this.prefix;
+    }
+
+    public void setPrefix (boolean prefix) {
+
+        this.prefix = prefix;
+    }
+
+    public String getSlot () {
+
+        return this.slot;
+    }
+
+    public void setSlot (String slot) {
+
+        this.slot = slot;
+    }
 
     class AttributeInfo {
 
