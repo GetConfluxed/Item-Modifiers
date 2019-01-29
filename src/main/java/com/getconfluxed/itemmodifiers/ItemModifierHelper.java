@@ -6,9 +6,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
 import com.getconfluxed.itemmodifiers.type.Type;
 
+import net.darkhax.bookshelf.lib.WeightedSelector;
 import net.darkhax.bookshelf.util.StackUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -61,6 +64,31 @@ public class ItemModifierHelper {
         }
 
         return types;
+    }
+
+    @Nullable
+    public static Modifier applyRandomModifier (ItemStack stack, boolean prefix) {
+
+        final Set<Type> types = ItemModifierHelper.getApplicableTypes(stack);
+
+        final WeightedSelector<Modifier> weight = new WeightedSelector<>();
+
+        for (final Type type : types) {
+
+            for (final Modifier modifier : prefix ? ItemModifiersMod.PREFIXES.get(type) : ItemModifiersMod.SUFFIXES.get(type)) {
+
+                weight.addEntry(modifier, modifier.getWeight());
+            }
+        }
+
+        if (!weight.getEntries().isEmpty()) {
+
+            final Modifier modifier = weight.getRandomEntry().getEntry();
+            ItemModifierHelper.setModifier(stack, modifier);
+            return modifier;
+        }
+
+        return null;
     }
 
     public static NBTTagCompound getModifierTag (ItemStack stack, boolean create) {
