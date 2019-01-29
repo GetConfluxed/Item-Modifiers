@@ -1,12 +1,7 @@
 package com.getconfluxed.itemmodifiers;
 
-import java.util.Collection;
-
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
-import com.getconfluxed.itemmodifiers.type.Types;
-import com.google.common.collect.Iterables;
 
-import net.darkhax.bookshelf.lib.Constants;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -19,13 +14,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @EventBusSubscriber(modid = ItemModifiersMod.MODID)
 public class EventHandler {
 
+    private static ModifierListener listener = new ModifierListener();
+
     @SubscribeEvent
     public static void onCrafting (PlayerEvent.ItemCraftedEvent event) {
 
-        final Collection<Modifier> prefixes = ItemModifiersMod.PREFIXES.get(Types.SWORD);
-        final Collection<Modifier> suffixes = ItemModifiersMod.SUFFIXES.get(Types.SWORD);
-        ItemModifierHelper.setModifier(event.crafting, Iterables.get(prefixes, Constants.RANDOM.nextInt(prefixes.size())));
-        ItemModifierHelper.setModifier(event.crafting, Iterables.get(suffixes, Constants.RANDOM.nextInt(suffixes.size())));
+        if (event.player != null && !event.player.getEntityWorld().isRemote) {
+
+            final Modifier prefix = ItemModifierHelper.applyRandomModifier(event.crafting, true);
+            final Modifier modifer = ItemModifierHelper.applyRandomModifier(event.crafting, false);
+
+            event.player.openContainer.addListener(listener);
+            event.crafting.getTagCompound().setBoolean("SyncModifiers", true);
+        }
     }
 
     @SubscribeEvent
