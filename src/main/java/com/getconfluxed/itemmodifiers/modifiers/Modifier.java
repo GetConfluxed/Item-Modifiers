@@ -3,6 +3,7 @@ package com.getconfluxed.itemmodifiers.modifiers;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.getconfluxed.itemmodifiers.Registerable;
 import com.getconfluxed.itemmodifiers.type.Type;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -10,6 +11,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -19,29 +21,35 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
+public class Modifier extends Registerable<Modifier> {
 
     /**
      * The type of items this modifier can be applied to.
      */
     private final Type type;
-    
+
     /**
-     * The weight of the modifier. 
+     * The weight of the modifier.
      */
     private final int weight;
-    
+
+    /**
+     * Whether or not this modifier is a prefix.
+     */
+    private final boolean prefix;
+
     /**
      * A map of all the attribute modifiers applied by the item modifier.
      */
     private final Multimap<String, AttributeModifier> modifiers = HashMultimap.create();
-    
-    public Modifier(Type type, int weight) {
-        
+
+    public Modifier (Type type, int weight, boolean prefix) {
+
+        super(Modifier.class);
         this.type = type;
         this.weight = weight;
+        this.prefix = prefix;
     }
 
     /**
@@ -51,17 +59,34 @@ public class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
      * @return The type of items this modifier can be applied to.
      */
     public Type getType () {
-        
+
         return this.type;
     }
-    
+
     /**
      * The weight/rarity of the modifier.
+     *
      * @return The weight/rarity of the modifier.
      */
-    public int getWeight() {
-        
+    public int getWeight () {
+
         return this.weight;
+    }
+
+    /**
+     * Checks if the modifier is a prefix or suffix. If this returns false it is considered a
+     * suffix.
+     *
+     * @return Whether or not the modifier is a prefix.
+     */
+    public boolean isPrefix () {
+
+        return this.prefix;
+    }
+
+    public void setAttribute (IAttribute attribute, AttributeModifier modifier) {
+
+        this.modifiers.put(attribute.getName(), modifier);
     }
 
     /**
@@ -76,7 +101,7 @@ public class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
      */
     public Multimap<String, AttributeModifier> getAttributeModifiers (EntityEquipmentSlot slot, ItemStack stack) {
 
-        return modifiers;
+        return this.modifiers;
     }
 
     /**
@@ -124,7 +149,7 @@ public class Modifier extends IForgeRegistryEntry.Impl<Modifier> {
     public void onRemoved (ItemStack stack) {
 
     }
-    
+
     /**
      * Gets the localization key for the name of the modifier.
      *
