@@ -1,6 +1,5 @@
 package com.getconfluxed.itemmodifiers.modifiers;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -41,7 +40,7 @@ public class Modifier extends Registerable<Modifier> {
      * Whether or not this modifier is a prefix.
      */
     private final boolean prefix;
-    
+
     private final EntityEquipmentSlot slot;
 
     /**
@@ -183,7 +182,7 @@ public class Modifier extends Registerable<Modifier> {
     public String modifyItemName (String originalName, ItemStack stack) {
 
         final String modifierName = I18n.format(this.getLocalizationKey());
-        return prefix ? modifierName + " " + originalName : originalName + " " + modifierName;
+        return this.prefix ? modifierName + " " + originalName : originalName + " " + modifierName;
     }
 
     @SideOnly(Side.CLIENT)

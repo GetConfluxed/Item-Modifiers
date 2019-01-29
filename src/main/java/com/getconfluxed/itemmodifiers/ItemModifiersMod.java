@@ -39,12 +39,12 @@ public class ItemModifiersMod {
         for (final Modifier modifier : MODIFIER_REGISTRY) {
 
             if (modifier.isPrefix()) {
-                
+
                 PREFIXES.put(modifier.getType(), modifier);
             }
-            
+
             else {
-                
+
                 SUFFIXES.put(modifier.getType(), modifier);
             }
         }

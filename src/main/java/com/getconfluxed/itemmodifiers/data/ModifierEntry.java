@@ -24,11 +24,11 @@ public class ModifierEntry {
     private int weight;
 
     @Expose
-    private boolean prefix = true;
+    private final boolean prefix = true;
 
     @Expose
-    private String slot = "mainhand";
-    
+    private final String slot = "mainhand";
+
     @Expose
     private AttributeInfo[] attributes;
 
@@ -44,19 +44,20 @@ public class ModifierEntry {
         private int operation;
     }
 
-    private EntityEquipmentSlot getSlot(String name) {
-        
-        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-            
+    private EntityEquipmentSlot getSlot (String name) {
+
+        for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+
             if (slot.getName().equalsIgnoreCase(name)) {
-                
+
                 return slot;
             }
         }
-        
+
         ItemModifiersMod.LOG.error("Could not find slot type for {}. Defaulting to mainhand.", name);
         return EntityEquipmentSlot.MAINHAND;
     }
+
     @Nullable
     public Modifier build (ResourceLocation location) {
 
@@ -68,7 +69,7 @@ public class ModifierEntry {
 
                 if (specifiedType != null) {
 
-                    final Modifier modifier = new Modifier(specifiedType, this.weight, this.prefix, getSlot(slot));
+                    final Modifier modifier = new Modifier(specifiedType, this.weight, this.prefix, this.getSlot(this.slot));
 
                     for (final AttributeInfo info : this.attributes) {
 

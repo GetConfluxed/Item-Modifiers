@@ -63,75 +63,75 @@ public class ItemModifierHelper {
         return types;
     }
 
-    public static NBTTagCompound getModifierTag(ItemStack stack, boolean create) {
-        
+    public static NBTTagCompound getModifierTag (ItemStack stack, boolean create) {
+
         if (stack.hasTagCompound()) {
-            
+
             final NBTTagCompound stackTag = stack.getTagCompound();
-            
+
             if (stackTag != null) {
-                
+
                 final NBTTagCompound modifierTag = stackTag.getCompoundTag(MODIFIER_TAG_KEY);
-                
+
                 if (modifierTag != null) {
-                    
+
                     return modifierTag;
                 }
             }
         }
-        
+
         if (create) {
-            
+
             final NBTTagCompound stackTag = StackUtils.prepareStackTag(stack);
             final NBTTagCompound modifierTag = new NBTTagCompound();
             stackTag.setTag(MODIFIER_TAG_KEY, modifierTag);
             return modifierTag;
         }
-        
+
         return null;
     }
-    
-    public static Modifier[] getModifiers(ItemStack stack) {
-        
-        return new Modifier[] {getPrefix(stack), getSuffix(stack)};
+
+    public static Modifier[] getModifiers (ItemStack stack) {
+
+        return new Modifier[] { getPrefix(stack), getSuffix(stack) };
     }
-    
-    public static Modifier getPrefix(ItemStack stack) {
-        
+
+    public static Modifier getPrefix (ItemStack stack) {
+
         final NBTTagCompound tag = getModifierTag(stack, false);
-        
+
         if (tag != null) {
-            
+
             final NBTTagCompound modifierTag = tag.getCompoundTag("Prefix");
             return ItemModifiersMod.MODIFIER_REGISTRY.getValue(new ResourceLocation(modifierTag.getString("Id")));
         }
-        
+
         return null;
     }
-    
-    public static Modifier getSuffix(ItemStack stack) {
-        
+
+    public static Modifier getSuffix (ItemStack stack) {
+
         final NBTTagCompound tag = getModifierTag(stack, false);
-        
+
         if (tag != null) {
-            
+
             final NBTTagCompound modifierTag = tag.getCompoundTag("Suffix");
             return ItemModifiersMod.MODIFIER_REGISTRY.getValue(new ResourceLocation(modifierTag.getString("Id")));
         }
-        
+
         return null;
     }
-    
-    public static void setModifier(ItemStack stack, Modifier modifier) {
-        
-        final NBTTagCompound tag = getModifierTag(stack, true);        
+
+    public static void setModifier (ItemStack stack, Modifier modifier) {
+
+        final NBTTagCompound tag = getModifierTag(stack, true);
         final Modifier existing = modifier.isPrefix() ? getPrefix(stack) : getSuffix(stack);
-        
+
         if (existing != null) {
-            
+
             existing.onRemoved(stack);
         }
-        
+
         final NBTTagCompound modifierTag = new NBTTagCompound();
         modifierTag.setString("Id", modifier.getRegistryName().toString());
         tag.setTag(modifier.isPrefix() ? "Prefix" : "Suffix", modifierTag);

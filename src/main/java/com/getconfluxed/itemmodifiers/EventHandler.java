@@ -1,7 +1,6 @@
 package com.getconfluxed.itemmodifiers;
 
 import java.util.Collection;
-import java.util.List;
 
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
 import com.getconfluxed.itemmodifiers.type.Types;
@@ -23,8 +22,8 @@ public class EventHandler {
     @SubscribeEvent
     public static void onCrafting (PlayerEvent.ItemCraftedEvent event) {
 
-        Collection<Modifier> prefixes = ItemModifiersMod.PREFIXES.get(Types.SWORD);
-        Collection<Modifier> suffixes = ItemModifiersMod.SUFFIXES.get(Types.SWORD);
+        final Collection<Modifier> prefixes = ItemModifiersMod.PREFIXES.get(Types.SWORD);
+        final Collection<Modifier> suffixes = ItemModifiersMod.SUFFIXES.get(Types.SWORD);
         ItemModifierHelper.setModifier(event.crafting, Iterables.get(prefixes, Constants.RANDOM.nextInt(prefixes.size())));
         ItemModifierHelper.setModifier(event.crafting, Iterables.get(suffixes, Constants.RANDOM.nextInt(suffixes.size())));
     }
@@ -39,8 +38,8 @@ public class EventHandler {
         if (!previousStack.isEmpty()) {
 
             // Get the modifier of the previous stack.
-            for (Modifier modifier : ItemModifierHelper.getModifiers(previousStack)) {
-                
+            for (final Modifier modifier : ItemModifierHelper.getModifiers(previousStack)) {
+
                 // If there was a previous modifier, remove it's attributes and fire hook.
                 if (modifier != null) {
 
@@ -53,8 +52,8 @@ public class EventHandler {
         if (!previousStack.isEmpty()) {
 
             // Get the modifier of the new stack.
-            for (Modifier modifier : ItemModifierHelper.getModifiers(previousStack)) {
-                
+            for (final Modifier modifier : ItemModifierHelper.getModifiers(previousStack)) {
+
                 // If there was a new modifier, fire the equipped hook.
                 if (modifier != null) {
 
@@ -69,8 +68,8 @@ public class EventHandler {
     public static void onTooltipRendered (ItemTooltipEvent event) {
 
         // Try to get a modifier from the item.
-        for (Modifier modifier : ItemModifierHelper.getModifiers(event.getItemStack())) {
-            
+        for (final Modifier modifier : ItemModifierHelper.getModifiers(event.getItemStack())) {
+
             if (modifier != null) {
 
                 // Add the name modifier name to the item.
