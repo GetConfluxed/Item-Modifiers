@@ -1,4 +1,4 @@
-package com.getconfluxed.itemmodifiers;
+package com.getconfluxed.itemmodifiers.data;
 
 import javax.annotation.Nullable;
 

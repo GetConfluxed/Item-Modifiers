@@ -24,9 +24,11 @@ public class ItemModifiersMod {
     public static final String NAME = "Item Modifiers";
     public static final Logger LOG = LogManager.getLogger(NAME);
 
+    // Registries
     public static final IForgeRegistry<Type> TYPE_REGISTRY = createRegistry("a-types", Type.class);
     public static final IForgeRegistry<Modifier> MODIFIER_REGISTRY = createRegistry("b-modifiers", Modifier.class);
 
+    // Caches
     public static final Multimap<Type, Modifier> PREFIXES = HashMultimap.create();
     public static final Multimap<Type, Modifier> SUFFIXES = HashMultimap.create();
 
@@ -36,20 +38,22 @@ public class ItemModifiersMod {
         LOG.info("Loaded {} modifier type categories.", TYPE_REGISTRY.getValuesCollection().size());
         LOG.info("Loaded {} modifiers.", MODIFIER_REGISTRY.getValuesCollection().size());
 
+        // Iterate all modifiers and build the typed map cache.
         for (final Modifier modifier : MODIFIER_REGISTRY) {
 
-            if (modifier.isPrefix()) {
-
-                PREFIXES.put(modifier.getType(), modifier);
-            }
-
-            else {
-
-                SUFFIXES.put(modifier.getType(), modifier);
-            }
+            // Add the modifier to the appropriate map cache.
+            (modifier.isPrefix() ? PREFIXES : SUFFIXES).put(modifier.getType(), modifier);
         }
     }
 
+    /**
+     * Creates a new registry for this mod. This should not be used externally, because it uses
+     * this mod id.
+     *
+     * @param regName The name of the registry.
+     * @param type The class of the intended held object.
+     * @return The created registry.
+     */
     private static <T extends IForgeRegistryEntry<T>> IForgeRegistry<T> createRegistry (String regName, Class<T> type) {
 
         return new RegistryBuilder<T>().setName(new ResourceLocation(MODID, regName)).setType(type).allowModification().setMaxID(Integer.MAX_VALUE >> 5).create();

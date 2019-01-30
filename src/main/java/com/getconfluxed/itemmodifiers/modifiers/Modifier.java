@@ -3,7 +3,7 @@ package com.getconfluxed.itemmodifiers.modifiers;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.getconfluxed.itemmodifiers.Registerable;
+import com.getconfluxed.itemmodifiers.data.Registerable;
 import com.getconfluxed.itemmodifiers.type.Type;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
