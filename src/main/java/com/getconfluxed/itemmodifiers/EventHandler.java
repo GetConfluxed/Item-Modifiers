@@ -1,7 +1,9 @@
 package com.getconfluxed.itemmodifiers;
 
+import com.getconfluxed.itemmodifiers.inventory.ContainerListenerSyncModifiers;
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
 
+import net.darkhax.bookshelf.util.InventoryUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -14,17 +16,30 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @EventBusSubscriber(modid = ItemModifiersMod.MODID)
 public class EventHandler {
 
-    private static ModifierListener listener = new ModifierListener();
+    /**
+     * A constant container listener which is applied to the player's container when they craft
+     * an item. This is responsible for syncing data from the server to the client when the
+     * player crafts the item.
+     */
+    private static final ContainerListenerSyncModifiers SYNC_LISTENER = new ContainerListenerSyncModifiers();
 
     @SubscribeEvent
     public static void onCrafting (PlayerEvent.ItemCraftedEvent event) {
 
+        // Make sure the player exists, and this is the server world.
         if (event.player != null && !event.player.getEntityWorld().isRemote) {
 
+            // Apply the prefix and suffix modifiers.
             final Modifier prefix = ItemModifierHelper.applyRandomModifier(event.crafting, true);
             final Modifier modifer = ItemModifierHelper.applyRandomModifier(event.crafting, false);
 
-            event.player.openContainer.addListener(listener);
+            // If the current container doesn't have the sync hack listener, apply it.
+            if (!InventoryUtils.hasListener(event.player.openContainer, SYNC_LISTENER)) {
+
+                event.player.openContainer.addListener(SYNC_LISTENER);
+            }
+
+            // Mark the crafted item as requiring a sync from the server.
             event.crafting.getTagCompound().setBoolean("SyncModifiers", true);
         }
     }
