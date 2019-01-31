@@ -1,5 +1,6 @@
 package com.getconfluxed.itemmodifiers;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,8 +103,10 @@ public class ItemModifierHelper {
 
         for (final Type type : types) {
 
+            final Collection<Modifier> potentialModifiers = prefix ? ItemModifiersMod.PREFIXES.get(type) : ItemModifiersMod.SUFFIXES.get(type);
+
             // Loop through all the applicable prefixes for the item and desired modifier type.
-            for (final Modifier modifier : prefix ? ItemModifiersMod.PREFIXES.get(type) : ItemModifiersMod.SUFFIXES.get(type)) {
+            for (final Modifier modifier : potentialModifiers) {
 
                 // Populate the weightedTable with modifiers.
                 weightedTable.addEntry(modifier, modifier.getWeight());

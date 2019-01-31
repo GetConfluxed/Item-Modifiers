@@ -4,6 +4,7 @@ import com.getconfluxed.itemmodifiers.inventory.ContainerListenerSyncModifiers;
 import com.getconfluxed.itemmodifiers.modifiers.Modifier;
 
 import net.darkhax.bookshelf.util.InventoryUtils;
+import net.darkhax.bookshelf.util.MathsUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -30,17 +31,30 @@ public class EventHandler {
         if (event.player != null && !event.player.getEntityWorld().isRemote) {
 
             // Apply the prefix and suffix modifiers.
-            final Modifier prefix = ItemModifierHelper.applyRandomModifier(event.crafting, true);
-            final Modifier modifer = ItemModifierHelper.applyRandomModifier(event.crafting, false);
+            Modifier prefix = null;
+            Modifier suffix = null;
 
-            // If the current container doesn't have the sync hack listener, apply it.
-            if (!InventoryUtils.hasListener(event.player.openContainer, SYNC_LISTENER)) {
+            if (MathsUtils.tryPercentage(ItemModifiersMod.config.getPrefixChance())) {
 
-                event.player.openContainer.addListener(SYNC_LISTENER);
+                prefix = ItemModifierHelper.applyRandomModifier(event.crafting, true);
             }
 
-            // Mark the crafted item as requiring a sync from the server.
-            event.crafting.getTagCompound().setBoolean("SyncModifiers", true);
+            if ((ItemModifiersMod.config.isAllowBoth() || prefix == null) && MathsUtils.tryPercentage(ItemModifiersMod.config.getSuffixChance())) {
+
+                suffix = ItemModifierHelper.applyRandomModifier(event.crafting, false);
+            }
+
+            if (prefix != null || suffix != null) {
+
+                // If the current container doesn't have the sync hack listener, apply it.
+                if (!InventoryUtils.hasListener(event.player.openContainer, SYNC_LISTENER)) {
+
+                    event.player.openContainer.addListener(SYNC_LISTENER);
+                }
+
+                // Mark the crafted item as requiring a sync from the server.
+                event.crafting.getTagCompound().setBoolean("SyncModifiers", true);
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.getconfluxed.itemmodifiers;
 
+import java.io.File;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -31,6 +34,18 @@ public class ItemModifiersMod {
     // Caches
     public static final Multimap<Type, Modifier> PREFIXES = HashMultimap.create();
     public static final Multimap<Type, Modifier> SUFFIXES = HashMultimap.create();
+
+    public static final File CONFIG_DIR = createDirectory(new File("config/" + MODID));
+    public static final File OVERRIDES_DIR = createDirectory(new File(CONFIG_DIR, "overrides"));
+    public static final File MODIFIES_DIR = createDirectory(new File(OVERRIDES_DIR, "modifiers"));
+
+    public static ConfigurationThing config;
+
+    @EventHandler
+    public void onPreInit (FMLPreInitializationEvent event) {
+
+        config = new ConfigurationThing(new File(CONFIG_DIR, "itemmodifiers.cfg"));
+    }
 
     @EventHandler
     public void onLoadComplete (FMLLoadCompleteEvent event) {
@@ -57,5 +72,15 @@ public class ItemModifiersMod {
     private static <T extends IForgeRegistryEntry<T>> IForgeRegistry<T> createRegistry (String regName, Class<T> type) {
 
         return new RegistryBuilder<T>().setName(new ResourceLocation(MODID, regName)).setType(type).allowModification().setMaxID(Integer.MAX_VALUE >> 5).create();
+    }
+
+    private static File createDirectory (File file) {
+
+        if (!file.exists()) {
+
+            file.mkdirs();
+        }
+
+        return file;
     }
 }
