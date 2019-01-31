@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -19,6 +20,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -32,16 +35,25 @@ public class Modifiers {
 
         final IForgeRegistry<Modifier> registry = event.getRegistry();
 
-        for (final ModContainer mod : Loader.instance().getActiveModList()) {
+        ItemModifiersMod.LOG.info("Loading json based modifiers.");
+        
+        List<ModContainer> mods = Loader.instance().getActiveModList();
+        
+        final ProgressBar bar = ProgressManager.push("Loading Json Modifiers", mods.size(), false);
+        
+        for (final ModContainer mod : mods) {
 
+            bar.step("Loading from " + mod.getName());
             loadJsonItemModifiers(mod, registry);
         }
+        
+        ProgressManager.pop(bar);
     }
 
     private static void loadJsonItemModifiers (ModContainer mod, IForgeRegistry<Modifier> registry) {
 
         DataLoader.findFiles(mod, "data/" + mod.getModId() + "/" + ItemModifiersMod.MODID + "/modifiers", (root, file) -> {
-
+            
             // Only load files with the json extension
             if ("json".equals(FilenameUtils.getExtension(file.toString()))) {
 
