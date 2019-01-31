@@ -36,24 +36,24 @@ public class Modifiers {
         final IForgeRegistry<Modifier> registry = event.getRegistry();
 
         ItemModifiersMod.LOG.info("Loading json based modifiers.");
-        
-        List<ModContainer> mods = Loader.instance().getActiveModList();
-        
+
+        final List<ModContainer> mods = Loader.instance().getActiveModList();
+
         final ProgressBar bar = ProgressManager.push("Loading Json Modifiers", mods.size(), false);
-        
+
         for (final ModContainer mod : mods) {
 
             bar.step("Loading from " + mod.getName());
             loadJsonItemModifiers(mod, registry);
         }
-        
+
         ProgressManager.pop(bar);
     }
 
     private static void loadJsonItemModifiers (ModContainer mod, IForgeRegistry<Modifier> registry) {
 
         DataLoader.findFiles(mod, "data/" + mod.getModId() + "/" + ItemModifiersMod.MODID + "/modifiers", (root, file) -> {
-            
+
             // Only load files with the json extension
             if ("json".equals(FilenameUtils.getExtension(file.toString()))) {
 
