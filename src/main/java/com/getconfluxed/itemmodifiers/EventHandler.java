@@ -65,10 +65,10 @@ public class EventHandler {
         }
 
         // If there is a new item, try to apply it's modifier effects.
-        if (!previousStack.isEmpty()) {
+        if (!newStack.isEmpty()) {
 
             // Get the modifier of the new stack.
-            for (final Modifier modifier : ItemModifierHelper.getModifiers(previousStack)) {
+            for (final Modifier modifier : ItemModifierHelper.getModifiers(newStack)) {
 
                 // If there was a new modifier, fire the equipped hook.
                 if (modifier != null) {
