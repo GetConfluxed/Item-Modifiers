@@ -66,11 +66,11 @@ public class ModifierEntry {
 
     private EntityEquipmentSlot getSlot (String name) {
 
-        for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+        for (final EntityEquipmentSlot possibleSlotMath : EntityEquipmentSlot.values()) {
 
-            if (slot.getName().equalsIgnoreCase(name)) {
+            if (possibleSlotMath.getName().equalsIgnoreCase(name)) {
 
-                return slot;
+                return possibleSlotMath;
             }
         }
 
